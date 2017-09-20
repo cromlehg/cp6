@@ -26,7 +26,7 @@ contract PreSale is Pausable {
   
   uint public period;
 
-  mapping (address => uint) balances;
+  mapping (address => uint) public balances;
 
   address[] public investors;
 
