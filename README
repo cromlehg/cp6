@@ -1,0 +1,18 @@
+================================================================
+=                                                              =
+=                        Instruction                           =
+=                                                              =
+================================================================
+
+1) Deploy
+2) setWallet(wallet address)
+3) setStart(presale GMT start date in UNIX format)
+4) setHardcap(max limit of invested ether in wei)
+5) setMin(min ether for single purchase in wei)
+6) setPeriod(presale period in days)
+
+explanations:
+1 eth = 1000000000000000000 wei
+GMT = Moscow time - 3 hours
+You can convert GMT date to UNIX format http://www.onlineconversion.com/unix_time.htm  
+
