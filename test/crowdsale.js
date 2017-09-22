@@ -26,6 +26,14 @@ contract('PreSale', function(wallets) {
   const wallet = wallets[3]
 
   const newWallet = wallets[4]
+ 
+  const investor1 = wallets[5]
+
+  const investor2 = wallets[6]
+
+  const investor3 = wallets[7]
+
+  const investor4 = wallets[8]
 
   const period = new BigNumber(60)
 
@@ -53,6 +61,39 @@ contract('PreSale', function(wallets) {
   beforeEach(async function () {
     this.presale = await PreSale.new()
   })	 
+
+  describe('invest tests', function () {
+
+    const startDate = new BigNumber(Math.floor(Date.now()/1000) - 10*24*60*60)
+
+    const investor1Value1 = ether(11)
+
+    const investor1Value2 = ether(12)
+
+    const investor2Value1 = ether(13)
+
+    it('should invest balances', async function () {
+      await this.presale.setMin(min, {from: owner})
+      await this.presale.setHardcap(hardcap, {from: owner})
+      await this.presale.setStart(startDate, {from: owner})
+      await this.presale.setPeriod(1000, {from: owner})
+
+//      await this.presale.sendTransaction({value: investor1Value1, from: investor1})
+
+      console.log(investor1Value1)
+      console.log(investor1)
+      await this.presale.send(investor1Value1, {from: investor1}).should.be.fulfilled
+
+      //await this.presale.send({value: investor1Value1, from: investor1})
+//      await this.presale.sendTransaction({value: investor1Value1, from: notOwner, gasPrice: 0})
+//      await this.presale.sendTransaction({value: investor1Value1, from: investor1}).should.be.fulfilled
+  //    await this.presale.send(investor1Value2, {from: investor1})
+    //  await this.presale.send(investor2Value1, {from: investor2})
+      //investor1Value1.add(investor1Value2).should.be.bignumber.equal(await this.presale.balanceOf(investor1))
+//      investor2Value1.should.be.bignumber.equal(await this.presale.balanceOf(investor2))
+    })
+
+  })
 
 
   describe('owner tests', function () {
@@ -183,77 +224,32 @@ contract('PreSale', function(wallets) {
 
   })
 
-/*
-  it('common sale should add/insert/remove/clear/change milestone', async function () {
-    await this.crowdsale.addMilestone(m0Period, m0Bonus, {from: owner})
-    const m0 = await this.crowdsale.milestones(0)
-    m0[0].should.be.bignumber.equal(m0Period)
-    m0[1].should.be.bignumber.equal(m0Bonus)
-    const count0 = await this.crowdsale.milestonesCount()
-    count0.should.be.bignumber.equal(1)
-    m0Period.should.be.bignumber.equal(await this.crowdsale.totalPeriod())
-    await this.crowdsale.addMilestone(m1Period, m1Bonus, {from: owner})
-    const m1 = await this.crowdsale.milestones(1)
-    m1[0].should.be.bignumber.equal(m1Period)
-    m1[1].should.be.bignumber.equal(m1Bonus)
-    const count1 = await this.crowdsale.milestonesCount()
-    count1.should.be.bignumber.equal(2)
-    m0Period.add(m1Period).should.be.bignumber.equal(await this.crowdsale.totalPeriod())
-    await this.crowdsale.addMilestone(m3Period, m3Bonus, {from: owner})
-    const m3 = await this.crowdsale.milestones(2)
-    m3[0].should.be.bignumber.equal(m3Period)
-    m3[1].should.be.bignumber.equal(m3Bonus)
-    const count2 = await this.crowdsale.milestonesCount()
-    count2.should.be.bignumber.equal(3)
-    m0Period.add(m1Period).add(m3Period).should.be.bignumber.equal(await this.crowdsale.totalPeriod())
-    await this.crowdsale.insertMilestone(m1Period, m2Period, m2Bonus, {from: owner})
-    const m2 = await this.crowdsale.milestones(3)
-    m2[0].should.be.bignumber.equal(m2Period)
-    m2[1].should.be.bignumber.equal(m2Bonus)
-    const count3 = await this.crowdsale.milestonesCount()
-    count3.should.be.bignumber.equal(4)
-    m0Period.add(m1Period).add(m2Period).add(m3Period).should.be.bignumber.equal(await this.crowdsale.totalPeriod())
-    // TODO: change it
-    // TODO: remove it
-    // clear all
-  })	 
 
+  describe('time tests', function () {
 
-  describe('accepting payments', function () {
+    const startDate = new BigNumber(Math.floor(Date.now()/1000) - 10*24*60*60);
 
-    beforeEach(async function () {
-      await this.crowdsale.setStart(start)
-      await this.crowdsale.addMilestone(m0Period, m0Bonus)
-      await this.crowdsale.addMilestone(m1Period, m1Bonus)
-      await this.crowdsale.addMilestone(m2Period, m2Bonus)
-      await this.crowdsale.setHardcap(hardcap)
-      await this.crowdsale.setPrice(price)
-    })	 
-
-    it('should set hardcap correct', async function () {
-      hardcap.should.be.bignumber.equal(await this.crowdsale.hardCap())
+    it('should not invest before start date', async function () {
+      await this.presale.setMin(min, {from: owner})
+      await this.presale.setHardcap(hardcap, {from: owner})
+      await this.presale.setStart(startDate, {from: owner})
+      await this.presale.setPeriod(period, {from: owner})
+      await this.presale.send(11, {from: investor1}).should.be.rejectedWith(EVMThrow)
     })
 
-    it('should start time correct', async function () {
-      start.should.be.bignumber.equal(await this.crowdsale.start())
-    })
-
-    it('should reject payments before start', async function () {
-      await this.crowdsale.send(value).should.be.rejectedWith(EVMThrow)
-    })
-
-    it('should accept payments after start', async function () {
-      await increaseTimeTo(start.add(10))
-      await this.crowdsale.send(value).should.be.fulfilled
-    })
-
-    it('should reject payments after end', async function () {
-      await increaseTimeTo(await this.crowdsale.lastSaleDate())
-      await this.crowdsale.send(value).should.be.rejectedWith(EVMThrow)
+    it('should not invest after start date', async function () {
+      await this.presale.setMin(min, {from: owner})
+      await this.presale.setHardcap(hardcap, {from: owner})
+      await this.presale.setStart(startDate, {from: owner})
+      await this.presale.setPeriod(period, {from: owner})
+      await increaseTimeTo(startDate.add(period*24*60*60 + 10*24*60*60))
+      await this.presale.send(11, {from: investor1}).should.be.rejectedWith(EVMThrow)
     })
 
   })
-*/
+
+
+
  
 })
 
